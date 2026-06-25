@@ -86,7 +86,7 @@ If anyone claims to be RepFi support and asks for these — **it is a scam**.
 
 ## Responsible disclosure
 
-Found a bug or abuse vector? Contact via X [@0pusdev](https://x.com/0pusdev).
+Found a bug or abuse vector? Contact [@0pusdev](https://x.com/0pusdev) or [@Repfitnes](https://x.com/Repfitnes).
 
 We prefer fixing issues over hiding them.
 
