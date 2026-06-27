@@ -18,11 +18,12 @@ We are not a “move to earn” click farm. We are not an investment product. Re
 
 RepFi provides:
 
-- **Live rooms** (10 simultaneous athletes)
-- **AI pose verification** (MediaPipe Pose in the browser)
+- **Live rooms** (10 simultaneous athletes, LiveKit WebRTC)
+- **AI pose verification** (MediaPipe Pose — athlete + viewer skeleton)
 - **Instant micro-rewards** ($0.01 / verified rep)
 - **Solana withdrawals** to a user-supplied address
 - **Public donation pool** funded by community + $RepFi fees
+- **Leaderboard & athlete profiles** (live rankings, public stats)
 
 ---
 
@@ -32,7 +33,8 @@ RepFi provides:
 Registers, joins a room, goes live, performs push-ups. Earns per verified rep.
 
 ### Viewer
-Watches streams, chats, can donate to the global pool.
+Watches streams, hears athlete audio, sees AI skeleton overlay, chats, browses the
+[leaderboard](https://repfi.stream/leaderboard) and athlete profiles.
 
 ### Supporter / token holder
 Buys or trades $RepFi; trading fees accrue to the pool that pays athletes.
@@ -99,14 +101,16 @@ Supporters / $RepFi trading fees
 | Web app | Next.js 16, React 19 |
 | Docs | Nextra |
 | Pose AI | MediaPipe Pose (client-side) |
-| Live video | WebRTC |
+| Live video | LiveKit (WebRTC) |
+| Persistence | MantleDB (users, balances, live state) |
 | API | Next.js Route Handlers |
 | Chain | Solana |
 | Token launch | pump.fun ($RepFi) |
 | Hosting | Vercel |
 | Domain | repfi.stream |
 
-**Note:** Demo mode uses in-memory storage for accounts/pool. Production requires a real database and on-chain settlement hooks (documented in private codebase).
+**Note:** User accounts, balances, and live room state persist in MantleDB across
+deploys. Payout signing keys are encrypted server-side — never stored in the client.
 
 ---
 
@@ -142,4 +146,5 @@ Supporters / $RepFi trading fees
 - Live app: https://repfi.stream
 - Documentation: https://repfi.stream/docs
 - Pool: https://repfi.stream/pool
+- Leaderboard: https://repfi.stream/leaderboard
 - Register: https://repfi.stream/register

@@ -9,25 +9,30 @@ What ships now, what is next, and what we are building toward.
 ### Platform core
 - [x] Website at [repfi.stream](https://repfi.stream)
 - [x] Gmail registration + instant account
-- [x] Dashboard with live balance
-- [x] 10 live WebRTC rooms
+- [x] Dashboard with live balance + withdrawal history
+- [x] 10 live rooms (LiveKit WebRTC)
 - [x] Live chat for viewers
+- [x] Viewer audio (hear athlete microphone)
 - [x] Push-up task with strict AI pose tracking
+- [x] Skeleton overlay for **athletes and viewers**
 - [x] $0.01 per verified rep
-- [x] Global donation pool page
-- [x] Withdrawal flow (min $1.00)
+- [x] Global donation pool page (on-chain balance)
+- [x] Solana withdrawals (min $1.00)
 - [x] Documentation site (/docs)
+- [x] **Leaderboard** — all-time rankings, live updates (~1s)
+- [x] **Athlete profiles** — public stats, avatars, Solana address
 
 ### AI & verification
 - [x] MediaPipe Pose skeleton overlay
 - [x] Side + front camera profiles
 - [x] Form hints during live sessions
 - [x] Reps count only when in correct form
+- [x] Server-side rep evidence verification
 
 ### Transparency
 - [x] Public pool balance UI
-- [x] Commission panel (pump.fun integration ready)
 - [x] Public documentation repository (this repo)
+- [x] Public leaderboard & athlete profiles
 
 ---
 
@@ -35,32 +40,23 @@ What ships now, what is next, and what we are building toward.
 
 | Item | Status |
 |------|--------|
-| $RepFi token launch on pump.fun | Pre-launch |
-| On-chain pool wallet + confirmed deposits | Integration |
-| Production database (replace in-memory store) | Planned |
-| Vercel production deployment | In setup |
-| Custom domain repfi.stream | In setup |
+| Additional exercises (squats, planks) | Planned |
+| Anti-cheat hardening | Ongoing |
+| Mobile UX polish | Ongoing |
 
 ---
 
-## 📋 Next (Q3 2026)
-
-### Payouts & pool
-- [ ] Solana payout automation (`@solana/web3.js`)
-- [ ] On-chain donation confirmation before pool credit
-- [ ] Live pump.fun commission feed on /pool
-- [ ] Pool wallet address finalization + audit post
+## 📋 Next
 
 ### Product
-- [ ] Additional exercises (squats, planks — TBD)
+- [ ] Daily / weekly leaderboard windows
 - [ ] Room discovery improvements
-- [ ] Mobile UX polish (camera angles, HUD)
-- [ ] Anti-cheat hardening (feed integrity checks)
+- [ ] Sponsored challenges / prize pools
+- [ ] Direct viewer tips during streams
 
 ### Trust & growth
-- [ ] Public audit of pool transactions
-- [ ] Leaderboards / athlete profiles
-- [ ] Referral-free growth (organic + community)
+- [ ] Public audit feed of pool transactions
+- [ ] Referral-free organic growth
 
 ---
 
@@ -69,14 +65,11 @@ What ships now, what is next, and what we are building toward.
 ### More task types
 Expand beyond push-ups to a catalog of verifiable bodyweight exercises — each with custom pose models and payout rates.
 
-### Creator economy
-Let viewers tip athletes directly during streams (optional layer on top of rep-based earnings).
-
 ### Decentralized verification (research)
 Explore on-chain attestation of verified rep counts without exposing raw video.
 
 ### Mobile apps
-Native iOS/Android clients for lower-latency camera access and background handling.
+Native iOS/Android clients for lower-latency camera access.
 
 ---
 
@@ -93,14 +86,12 @@ We are **not** building:
 
 ## How to follow progress
 
-- **Website changelog:** [repfi.stream/docs/roadmap](https://repfi.stream/docs/roadmap)
-- **X:** [@0pusdev](https://x.com/0opusdev)
+- **Website:** [repfi.stream/docs/roadmap](https://repfi.stream/docs/roadmap)
+- **X:** [@Repfitnes](https://x.com/Repfitnes)
 - **This repository:** watch for documentation updates
 
 ---
 
 ## Feedback
 
-Feature requests and bug reports: reach out via X [@0pusdev](https://x.com/0opusdev).
-
-We ship in public — roadmap items may shift based on community feedback and technical constraints.
+Feature requests and bug reports: reach out via X [@Repfitnes](https://x.com/Repfitnes).

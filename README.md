@@ -33,6 +33,7 @@ RepFi is a **fitness bounty platform**. Athletes go live, perform verified push-
 |-----|----------------|
 | [PROJECT.md](docs/PROJECT.md) | Full overview A → Z |
 | [HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) | Registration → live → payout flow |
+| [LEADERBOARD.md](docs/LEADERBOARD.md) | Rankings & public athlete profiles |
 | [ANTI_CHEAT.md](docs/ANTI_CHEAT.md) | How pose AI blocks fake reps |
 | [SECURITY.md](docs/SECURITY.md) | Auth, sessions, what we never store |
 | [WHY_NOT_A_SCAM.md](docs/WHY_NOT_A_SCAM.md) | Trust & honest risks |
@@ -62,6 +63,7 @@ Application logic, API routes, and deployment config are **not published**. This
 | Task | Push-ups (more coming) |
 | Verification | MediaPipe Pose (browser) |
 | Rooms | 10 live rooms |
+| Leaderboard | [repfi.stream/leaderboard](https://repfi.stream/leaderboard) |
 | Chain | Solana |
 | Token | $RepFi on pump.fun |
 

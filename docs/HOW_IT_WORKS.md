@@ -42,9 +42,10 @@ Room state (live / offline, viewer count, rep count) is visible on the [Live](ht
 When you start a session:
 
 1. Browser requests **camera** and **microphone** permission.
-2. Your video stream is published via **WebRTC**.
-3. Viewers see your stream and can chat in real time.
-4. The **pose tracker** starts analyzing your body in the browser.
+2. Your video stream is published via **LiveKit** (WebRTC).
+3. Viewers see your stream, hear your audio, and can chat in real time.
+4. The **pose tracker** analyzes your body in the browser (skeleton overlay).
+5. Viewers also see a skeleton overlay — MediaPipe runs on their device on your stream.
 
 If you are not logged in, the site prompts you to [register](https://repfi.stream/register) first.
 
@@ -118,31 +119,56 @@ See [TOKENOMICS.md](TOKENOMICS.md) for money flow details.
 
 Viewers can:
 
-- Watch any live room
+- Watch any live room (video + **audio**)
+- See the **AI skeleton overlay** on the athlete
 - Send chat messages
 - See rep count and athlete nickname
+- Browse the [Leaderboard](https://repfi.stream/leaderboard) and open **athlete profiles**
 
 Viewers do not earn from watching — earnings require performing verified tasks as the room athlete.
 
 ---
 
-## 9. Architecture (high level)
+## 9. Leaderboard & profiles
+
+**Leaderboard:** [repfi.stream/leaderboard](https://repfi.stream/leaderboard)
+
+- All athletes ranked by **lifetime verified push-ups**
+- Updates about **every second** during live sessions
+- Shows nickname, reps, balance, and live status
+
+**Athlete profile** (click any nickname):
+
+- Unique avatar, rank, reps, balance, earned / withdrawn
+- Public **Solana payout address** (copy + Solscan)
+- Link to watch live if streaming
+
+See [LEADERBOARD.md](LEADERBOARD.md) in this repo.
+
+---
+
+## 10. Architecture (high level)
 
 ```
 Browser (athlete)
   ├── Camera / mic
-  ├── MediaPipe Pose → rep detection
-  └── WebRTC → live stream
+  ├── MediaPipe Pose → rep detection + skeleton
+  └── LiveKit → live stream
 
 Browser (viewer)
-  └── WebRTC receive + chat
+  ├── LiveKit receive + chat + audio
+  └── MediaPipe Pose → skeleton on remote video
 
 Next.js API
   ├── Auth (register, session)
-  ├── Live rooms (heartbeat, viewers)
-  ├── Rewards (credit balance per rep)
-  ├── Pool (donations, balance)
-  └── Withdraw (Solana payout stub / integration point)
+  ├── Live rooms (heartbeat, viewers, LiveKit tokens)
+  ├── Rewards (credit balance per verified rep)
+  ├── Leaderboard + athlete profiles (public read)
+  ├── Pool (donations, on-chain balance)
+  └── Withdraw (Solana payout)
+
+MantleDB
+  └── Users, balances, live state, encrypted secrets
 
 Solana
   └── Payouts to user-supplied address
@@ -150,20 +176,18 @@ Solana
 
 ---
 
-## 10. Demo vs production
+## 11. Production storage
 
-The current public deployment may use **in-memory storage** for accounts and pool state (resets on server restart). Production requires:
-
-- Persistent database (Postgres or similar)
-- On-chain confirmation before crediting donations
-- Solana payout integration via `@solana/web3.js`
-
-Integration points are documented in the private codebase.
+User accounts, balances, rep counts, and live room state persist in **MantleDB**
+(across server restarts and deploys). The donation pool balance is read from the
+on-chain pool wallet on the [Pool page](https://repfi.stream/pool).
 
 ---
 
 ## Quick links
 
+- [Leaderboard](https://repfi.stream/leaderboard)
+- [LEADERBOARD.md](LEADERBOARD.md)
 - [Getting Started](https://repfi.stream/docs/getting-started)
 - [Pose Tracking](https://repfi.stream/docs/pose-tracking)
 - [Earnings & Withdrawals](https://repfi.stream/docs/earnings)

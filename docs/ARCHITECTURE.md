@@ -11,17 +11,23 @@ High-level system design. No secrets, no private keys, no deploy credentials.
 │                     repfi.stream                        │
 │                   (Next.js on Vercel)                   │
 ├─────────────────────────────────────────────────────────┤
-│  Pages          │  API Routes         │  Static       │
-│  /live          │  /api/auth/*        │  /docs        │
-│  /register      │  /api/reward        │  /pool        │
-│  /dashboard     │  /api/withdraw      │  images       │
-│  /pool          │  /api/live/*        │               │
-└────────┬────────┴──────────┬──────────┴───────────────┘
-         │                   │
-    Browser (athlete)    data/repfi.json
-    ├── MediaPipe Pose  (users, balances, pool)
-    ├── WebRTC stream
-    └── httpOnly session cookie
+│  Pages              │  API Routes           │  Static   │
+│  /live              │  /api/auth/*          │  /docs    │
+│  /register          │  /api/reward          │  images   │
+│  /dashboard         │  /api/withdraw        │           │
+│  /pool              │  /api/live/*          │           │
+│  /leaderboard       │  /api/leaderboard     │           │
+│  /profile           │  /api/athlete/*       │           │
+└────────┬────────────┴──────────┬────────────┴───────────┘
+         │                       │
+    Browser (athlete)        MantleDB
+    ├── MediaPipe Pose       (users, balances,
+    ├── LiveKit publish       live rooms, payouts)
+    └── httpOnly session
+         │
+    Browser (viewer)
+    ├── LiveKit subscribe + audio
+    └── MediaPipe on remote video (skeleton)
 ```
 
 ---
@@ -30,11 +36,32 @@ High-level system design. No secrets, no private keys, no deploy credentials.
 
 ```
 1. Athlete camera → MediaPipe landmarks (client)
-2. PushUpTracker.process() → rep=true, inForm=true
-3. POST /api/reward (session cookie, no body)
-4. Server: verify session → rate limit → addReward(+1¢)
-5. Persist to data/repfi.json
-6. Response → update UI balance
+2. PushUpTracker → rep evidence (depth, elbow, timing)
+3. POST /api/reward (session cookie + evidence JSON)
+4. Server: verify session → rate limit → verify evidence → addReward(+1¢)
+5. Persist to MantleDB (totalReps++, earnedCents++)
+6. Response → update UI balance + leaderboard on next poll
+```
+
+---
+
+## Data flow: leaderboard
+
+```
+1. GET /api/leaderboard (public, no auth)
+2. Server: merge user store + live room map
+3. Sort by totalReps DESC → return rows + version
+4. Client polls ~1s; sessionStorage cache for instant re-display
+```
+
+---
+
+## Data flow: athlete profile
+
+```
+1. GET /api/athlete/:nickname (public)
+2. Server: user stats + rank + live room id
+3. Client shows cached profile immediately; refreshes in background
 ```
 
 ---
@@ -43,10 +70,10 @@ High-level system design. No secrets, no private keys, no deploy credentials.
 
 ```
 1. Dashboard → POST /api/withdraw (session cookie)
-2. Server: balance ≥ $1.00, pool ≥ balance
-3. Deduct balance + pool
-4. INTEGRATION: Solana transfer to user's public address
-   (private key for pool wallet — server env only, never in client)
+2. Server: balance ≥ $1.00, pool wallet solvency check
+3. Record payout, deduct balance (grow-only counters)
+4. Solana transfer via encrypted payout key (server only)
+5. On failure → revert balance, mark payout failed
 ```
 
 ---
@@ -56,11 +83,12 @@ High-level system design. No secrets, no private keys, no deploy credentials.
 | Component | Location | Visible to user? |
 |-----------|----------|------------------|
 | Pose model | Browser (CDN) | Yes (skeleton overlay) |
-| Rep counter logic | Browser JS bundle | Yes (obfuscated in build) |
+| Rep counter logic | Browser JS bundle | Yes |
+| Rep credit decision | Server API | No |
 | Session secret | Server env | **No** |
-| User database | Server filesystem | **No** |
-| Pool wallet key | Server env / HSM | **No** |
-| Reward crediting | Server API | **No** |
+| User database | MantleDB | **No** |
+| Payout signing key | Encrypted in MantleDB | **No** |
+| Leaderboard data | Server API | Yes (public) |
 
 ---
 
@@ -78,14 +106,14 @@ High-level system design. No secrets, no private keys, no deploy credentials.
 | Layer | Technology |
 |-------|------------|
 | Framework | Next.js 16, React 19 |
-| Docs theme | Nextra (internal fork in monorepo) |
+| Docs theme | Nextra |
 | Pose AI | MediaPipe Pose via Tasks Vision CDN |
-| Live video | WebRTC |
+| Live video | LiveKit (WebRTC) |
 | Auth | scrypt + HMAC session cookies |
-| Storage | JSON file (`data/repfi.json`) |
+| Storage | MantleDB (remote KV) |
+| Chain | Solana (`@solana/web3.js`) |
 | Hosting | Vercel |
 | Domain | repfi.stream |
-| Chain | Solana |
 | Token | $RepFi (pump.fun) |
 
 ---
@@ -94,9 +122,11 @@ High-level system design. No secrets, no private keys, no deploy credentials.
 
 | Variable | Purpose |
 |----------|---------|
-| `AUTH_SECRET` | Session signing (required in prod) |
-| `REPFI_DATA_DIR` | User database directory |
-| `PUMP_MINT` | Token mint for commission panel |
-| `PUMP_CREATOR_WALLET` | Fee-sharing wallet |
+| `AUTH_SECRET` | Session signing |
+| `REPFI_MANTLE_KEY` | MantleDB access |
+| `REPFI_MANTLE_NS` | MantleDB namespace |
+| `ADMIN_CREDIT_SECRET` | Admin ops + key encryption |
+| `LIVEKIT_*` | Live streaming tokens |
+| `NEXT_PUBLIC_LIVEKIT_URL` | Client LiveKit endpoint |
 
-None of these are exposed to the client bundle.
+None of these are exposed in the client bundle except the public LiveKit URL.
